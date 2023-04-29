@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine.UI;
 using ZombieAttack.Managers;
 using ZombieAttack.Controllers;
+using System.ComponentModel.Design;
 
 public class BaseZombie : MonoBehaviour
 {
@@ -90,34 +91,55 @@ public class BaseZombie : MonoBehaviour
 
             return;
         }
-
+        else if (_nearestCharacter == null)
+        {
+            SetAttack(false);
+        }
 
         if (!isAttack)
         {
             _navMeshAgent.speed = zombieSpeed;
             _navMeshAgent.destination = _nearestCharacter.transform.position;
+            gameObject.transform.DOLookAt(_nearestCharacter.transform.position, 0.5f);
 
             var pos = _nearestCharacter.transform.position;
             pos.y = transform.position.y;
 
-            var dist = Vector3.Distance(transform.position, pos);
+            _distance = Vector3.Distance(transform.position, pos);
 
-            if (dist < _zombieData.zombieAttackDistance)
+            if (_distance < _zombieData.zombieAttackDistance)
             {
                 isAttack = true;
                 _navMeshAgent.isStopped = true;
+
+            }
+
+
+        }
+        else if (isAttack)
+        {
+            SetAttack(true);
+
+            var pos = _nearestCharacter.transform.position;
+            pos.y = transform.position.y;
+
+            _distance = Vector3.Distance(transform.position, pos);
+
+
+            if ( _distance > _zombieData.zombieAttackDistance && !isGameOver)
+            {
+                isAttack = false;
+                _navMeshAgent.isStopped = false;
+                SetAttack(false);
+
             }
 
         }
-        else
-        {
-            SetAttack();
-        }
 
     }
-    protected virtual void SetAttack()
+    protected virtual void SetAttack(bool active)
     {
-        _animationController.OnZombieAttackAnimation(true);
+        _animationController.OnZombieAttackAnimation(active);
     }
 
     protected virtual void SetZombieArise(Transform transform)
@@ -126,7 +148,7 @@ public class BaseZombie : MonoBehaviour
     }
     protected virtual void SetDead()
     {
-        
+
         _collider.enabled = false;
         ZombieManager.Instance.IncreaseKilledZombie();
         UIManager.Instance.UpdateLevelSlider();
@@ -135,23 +157,24 @@ public class BaseZombie : MonoBehaviour
         _navMeshAgent.isStopped = true;
         _animationController.OnDeathAnimation(true);
         ZombieManager.Instance.RemoveZombie(this);
-        Destroy(this.gameObject,3);
+        Destroy(this.gameObject, 3);
         isGameOver = true;
-        Instantiate(deadBloodParticle, this.transform.position, Quaternion.identity);
+        var vfx = Instantiate(deadBloodParticle, this.transform.position, Quaternion.identity);
+        Destroy(vfx, 3);
     }
 
     protected virtual void SetHealth(float damage)
     {
         _zombieHealth -= damage;
-        _healthBarController.UpdateHealthBar(_zombieHealth,_zombieData.zombieMaxHealth);
+        _healthBarController.UpdateHealthBar(_zombieHealth, _zombieData.zombieMaxHealth);
         if (_zombieHealth <= 0) SetDead();
     }
 
     protected virtual void CreateDamageText(float damage, Vector3 pos)
     {
-        var damagePrefab = Instantiate(_damageText,pos, Quaternion.identity);
+        var damagePrefab = Instantiate(_damageText, pos, Quaternion.identity);
         _damageText.gameObject.SetActive(true);
-        _damageText.text ="-"+damage.ToString();
+        _damageText.text = "-" + damage.ToString();
         _damageText.gameObject.transform.DOLocalMoveY(1, 1, false);
         _damageText.DOFade(0, 1);
         Destroy(damagePrefab, 1);
@@ -159,7 +182,8 @@ public class BaseZombie : MonoBehaviour
 
     protected virtual void CreateBloodParticle(Vector3 pos)
     {
-        Instantiate(hitBloodParticle, pos, Quaternion.identity);
+        var vfx = Instantiate(hitBloodParticle, pos, Quaternion.identity);
+        Destroy(vfx, 3);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -176,10 +200,10 @@ public class BaseZombie : MonoBehaviour
         }
         if (other.gameObject.TryGetComponent(out BaseCharacter character))
         {
-            
+
             character.SetHealth(_zombieAttackPower);
         }
     }
-    
+
     #endregion
 }

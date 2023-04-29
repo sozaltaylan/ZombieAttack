@@ -21,6 +21,7 @@ public class BaseWeapon : MonoBehaviour
     protected float _duration;
     protected float _jumpPower;
     protected float _attackPower;
+    [SerializeField] protected float maxDistance;
 
     #endregion
 
@@ -59,9 +60,11 @@ public class BaseWeapon : MonoBehaviour
 
     public virtual void Throw(Vector3 pos)
     {
+        float distance = Vector3.Distance(_weapon.transform.position, pos);
+        float speed = _duration * Mathf.Clamp01(distance / maxDistance);
 
         _weapon.transform.SetParent(null);
-        _weapon.transform.DOJump(pos + Vector3.up, _jumpPower, 0, _duration);
+        _weapon.transform.DOJump(pos + Vector3.up, _jumpPower, 0, speed);
         _weapon.transform.DORotate(pos, 1);
         _weapon = null;
         RecreateWeapon();

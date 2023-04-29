@@ -29,9 +29,9 @@ public class FastZombie : BaseZombie
     {
         base.SetHealth(damage);
     }
-    protected override void SetAttack()
+    protected override void SetAttack(bool active)
     {
-        base.SetAttack();
+        base.SetAttack(active);
     }
     protected override void CreateDamageText(float damage, Vector3 pos)
     {

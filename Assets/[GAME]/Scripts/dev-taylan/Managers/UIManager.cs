@@ -43,7 +43,7 @@ namespace ZombieAttack.Managers
 
         public void UpdateMoneyText(float money)
         {
-            _totalMoneyText.text = money.ToString();
+            _totalMoneyText.text = money.ToString("F0");
             _totalMoneyText.transform.parent.DOKill(true);
             _totalMoneyText.transform.parent.DOShakeScale(.1f, .1f, 1, .1f);
 

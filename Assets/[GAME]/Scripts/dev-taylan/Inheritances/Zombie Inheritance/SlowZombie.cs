@@ -19,9 +19,9 @@ public class SlowZombie : BaseZombie
     {
         base.SetTarget(this.transform, _zombieData.zombieSpeed);
     }
-    protected override void SetAttack()
+    protected override void SetAttack(bool active)
     {
-        base.SetAttack();
+        base.SetAttack(active);
     }
     protected override void SetZombieArise(Transform transform)
     {

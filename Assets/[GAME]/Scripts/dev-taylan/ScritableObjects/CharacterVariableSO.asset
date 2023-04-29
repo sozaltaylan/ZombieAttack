@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackDistance: 15
   attackTime: 1.5
-  closeRangeAttackDistance: 4.5
+  closeRangeAttackDistance: 4
   maxHealth: 50

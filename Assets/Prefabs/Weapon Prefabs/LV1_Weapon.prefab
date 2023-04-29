@@ -113,6 +113,7 @@ MonoBehaviour:
   prefabVeapon: {fileID: 8726814933581078706}
   isWeaponCloseRange: 0
   weaponData: {fileID: 11400000, guid: f10dad8727bb9a7429c31c5fb12db359, type: 2}
+  maxDistance: 10
 --- !u!54 &8099294966219220530
 Rigidbody:
   m_ObjectHideFlags: 0
